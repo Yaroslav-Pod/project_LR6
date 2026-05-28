@@ -1,18 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Header from './Header';
+import Filter from './Filter';
 import '../App.css'; 
 
 export default function App() {
+  // Стани
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState('all');
+
   return (
     <div className="app-container">
       {/* Шапка сайту */}
-      <header className="app-header">
-        <div className="header-brand">
-          <h1>Каталог Елементів</h1>
-        </div>
-        <div className="search-box">
-          <input type="text" placeholder="Пошук за назвою..." />
-        </div>
-      </header>
+      <Header query={searchQuery} onSearchChange={setSearchQuery} />
       
       <div className="catalog-layout">
         {/* Бокова панель (Сайдбар) */}
@@ -34,16 +33,7 @@ export default function App() {
           {/* Секція фільтрації */}
           <div className="catalog-section">
             <h2>Фільтрація</h2>
-            <div className="filter-sort-bar">
-              <div className="filter-group">
-                <label>Оберіть жанр</label>
-                <select>
-                  <option>Усі жанри</option>
-                  <option>Action</option>
-                  <option>Drama</option>
-                </select>
-              </div>
-            </div>
+            <Filter currentFilter={filter} onFilterChange={setFilter} />
           </div>
 
         </aside>
