@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Filter from './Filter';
 import ItemList from './ItemList';
+import AddItemForm from './AddItemForm';
+import Section from './Section';
 import '../App.css'; 
 
-// API для тестування (імітація каталогу фільмів)
 const API_URL = 'https://jsonplaceholder.typicode.com/photos?_limit=12'; 
 
 export default function App() {
-  // Стани
+  // стани
   const [items, setItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('all');
@@ -27,12 +28,11 @@ export default function App() {
         if (!response.ok) throw new Error('Не вдалося завантажити дані з сервера');
         
         const data = await response.json();
-        // Адаптуємо дані під фільми
         const formattedData = data.map(item => ({
           id: item.id,
           title: item.title.split(' ').slice(0, 3).join(' '), // короткі назви
           image: item.url,
-          rating: Math.floor(Math.random() * 5) + 1, // фейковий рейтинг 1-5
+          rating: Math.floor(Math.random() * 5) + 1, // рейтинг 1-5
           genre: item.id % 2 === 0 ? 'Action' : 'Drama'
         }));
         
@@ -47,10 +47,14 @@ export default function App() {
     }
 
     fetchItems();
-    return () => controller.abort(); // Cleanup функція
+    return () => controller.abort(); // Функція очищення (cleanup)
   }, []);
 
-  // Метод управління станом (видалення)
+  // Іммутабельні методи управління станом
+  const handleAddItem = (newItem) => {
+    setItems(prev => [...prev, { ...newItem, id: Date.now() }]);
+  };
+
   const handleDeleteItem = (id) => {
     setItems(prev => prev.filter(item => item.id !== id));
   };
@@ -68,36 +72,20 @@ export default function App() {
       <Header query={searchQuery} onSearchChange={setSearchQuery} />
       
       <div className="catalog-layout">
-        {/* Бокова панель (Сайдбар) */}
         <aside className="catalog-sidebar">
+          {/* Форма додавання та фільтрація */}
+          <Section title="Додати новий елемент">
+            <AddItemForm onAdd={handleAddItem} />
+          </Section>
           
-          {/* Секція форми додавання */}
-          <div className="catalog-section">
-            <h2>Додати новий елемент</h2>
-            <div className="add-movie-form">
-              <input type="text" placeholder="Назва фільму" />
-              <select>
-                <option>Action</option>
-                <option>Drama</option>
-              </select>
-              <button type="button">Додати</button>
-            </div>
-          </div>
-          
-          {/* Секція фільтрації */}
-          <div className="catalog-section">
-            <h2>Фільтрація</h2>
+          <Section title="Фільтрація">
             <Filter currentFilter={filter} onFilterChange={setFilter} />
-          </div>
-
+          </Section>
         </aside>
 
-        {/* Головна частина з картками */}
         <main className="catalog-main">
-          <div className="catalog-section">
-            <h2>Каталог елементів</h2>
-            
-            {/* Умовний рендеринг станів інтерфейсу та виклик ItemList */}
+          <Section title="Каталог елементів">
+            {/* Умовний рендеринг станів інтерфейсу */}
             {isLoading && <p className="loading-text">Завантаження даних...</p>}
             
             {error && <p className="error-message">Помилка: {error}</p>}
@@ -109,7 +97,7 @@ export default function App() {
             {!isLoading && !error && filteredItems.length > 0 && (
               <ItemList items={filteredItems} onDelete={handleDeleteItem} />
             )}
-          </div>
+          </Section>
         </main>
       </div>
     </div>
