@@ -1,7 +1,17 @@
 import React from 'react';
 
-export default function Filter({ activeGenre, onGenreChange, sortBy, onSortChange }) {
-  const genres = ["Всі", "Sci-Fi", "Action", "Adventure", "Crime", "Drama"];
+// 1. Приймаємо правильні назви пропсів з App.js
+export default function Filter({ currentFilter, onFilterChange, sortBy, onSortChange }) {
+  
+  // Використовуємо масив об'єктів, щоб розділити значення для логіки (value) та текст для людей
+  const genres = [
+    { value: 'all', label: 'Всі' },
+    { value: 'Action', label: 'Action' },
+    { value: 'Drama', label: 'Drama' },
+    { value: 'Sci-Fi', label: 'Sci-Fi' },
+    { value: 'Adventure', label: 'Adventure' },
+    { value: 'Crime', label: 'Crime' }
+  ];
 
   return (
     <div className="filter-sort-bar">
@@ -9,15 +19,20 @@ export default function Filter({ activeGenre, onGenreChange, sortBy, onSortChang
         <label htmlFor="genre-select">Жанр:</label>
         <select 
           id="genre-select" 
-          value={activeGenre} 
-          onChange={(e) => onGenreChange(e.target.value)}
+          value={currentFilter} // Змінено на currentFilter
+          onChange={(e) => onFilterChange(e.target.value)} // Змінено на onFilterChange
         >
-          {genres.map(g => <option key={g} value={g}>{g}</option>)}
+          {genres.map(g => (
+            <option key={g.value} value={g.value}>
+              {g.label}
+            </option>
+          ))}
         </select>
       </div>
 
       <div className="filter-group">
         <label htmlFor="sort-select">Сортувати:</label>
+        {/* Сортування працюватиме, якщо ви згодом передадите sortBy та onSortChange з App.js */}
         <select 
           id="sort-select" 
           value={sortBy} 
